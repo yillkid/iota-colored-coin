@@ -58,11 +58,16 @@ pub_key =  RSA.importKey(str(obj_holder["credentialSubject"]["publicKeyPem"][2:l
 cipher = Cipher_PKCS1_v1_5.new(pub_key)
 cipher_seed = cipher.encrypt(seed_issuer.encode())
 
-message = generate_token_credcredential(str(obj_issuer["credentialSubject"]["id"]), str(obj_holder["credentialSubject"]["id"]), str(b64encode(cipher_seed)), str(new_addr_issuer["addresses"][0]))
+cipher_seed = b64encode(cipher_seed)
+cipher_seed = str(cipher_seed, encoding = "utf-8")
+
+message = generate_token_credcredential(str(obj_issuer["credentialSubject"]["id"]), str(obj_holder["credentialSubject"]["id"]), cipher_seed, str(new_addr_issuer["addresses"][0]))
 
 # Send
 print("3. send token")
 hash_bundle = send(message, new_addr_issuer["addresses"][0])
+with open(PATH_ACCOUNT + holder + "/rsa/balance.txt", "w") as f:
+    f.write(str(hash_bundle))
 
 print("===================================")
 print("Bundle " + issuer + " to " + holder + " = " + str(hash_bundle))
